@@ -1,148 +1,243 @@
-public class DoublyLinkedList implements LinkedList{
-    private Node2P head,tail;
-    int size=0;
+/**
+ * DoublyLinkedList
+ */
+public class DoublyLinkedList implements LinkedList {
+    private Node2P head, tail;
+    int size = 0;
 
-    public DoublyLinkedList(){
+    public DoublyLinkedList() {
         head = tail = null;
     }
 
-    public boolean isEmpty(){
-        return(size==0);
+    @Override
+    public boolean isEmpty() {
+        return (size == 0);
     }
 
-    public int size(){
+    @Override
+    public int size() {
         return size;
     }
 
-    public void addFirst(Object inputData){
+    @Override
+    public void addFirst(Object inputData) {
         Node2P baru = new Node2P(inputData);
-        if (isEmpty()){
+        if (isEmpty()) {
             head = baru;
             tail = baru;
-            size++;
-        }
-        else{
+        } else {
             baru.next = head;
             head.prev = baru;
             head = baru;
-            size++;
         }
+        size++;
     }
-    public void addLast(Object inputData){
+
+    @Override
+    public void addLast(Object inputData) {
         Node2P baru = new Node2P(inputData);
-        if (isEmpty()){
+        if (isEmpty()) {
             head = baru;
             tail = baru;
-            size++;
-        }
-        else{
+        } else {
             tail.next = baru;
             baru.prev = tail;
             tail = baru;
-            size++;
         }
+        size++;
     }
 
-    public void addAfter(int index,Object inputData){
+    @Override
+    public void addAfter(int index, Object inputData) {
+        if (index < 0 || index >= size) {
+            System.out.println("Indeks di luar jangkauan");
+            return;
+        }
+
+        if (index == size - 1) {
+            addLast(inputData);
+            return;
+        }
+
         Node2P baru = new Node2P(inputData);
-        if (isEmpty()){
-            head = baru;
-            tail = baru;
-            size++;
-        }
-        else{
-            Node2P temp = head;
-            for(int i=0;i<index;i++){
-                temp = temp.next;
-            }
-            baru.prev = temp;
-            baru.next = temp.next;
-            temp.next = baru;
-            baru.next.prev = baru;
-            size++;
-        }
-    }
-    
-    public void deleteFirst(){
         Node2P temp = head;
-        if (!isEmpty()){ 
-            if (head == tail)
-                head = tail = null;
-            else
-            {
-                head.next.prev = null;
-                head = temp.next;
-            } size--;
+        for (int i = 0; i < index; i++) {
+            temp = temp.next;
         }
-        else
+
+        baru.prev = temp;
+        baru.next = temp.next;
+        if (temp.next != null) {
+            temp.next.prev = baru;
+        }
+        temp.next = baru;
+        size++;
+    }
+
+    @Override
+    public void deleteFirst() {
+        if (!isEmpty()) {
+            if (head == tail) {
+                head = tail = null;
+            } else {
+                head = head.next;
+                head.prev = null;
+            }
+            size--;
+        } else {
             System.out.println("List kosong!");
-    }
-
-    public void deleteLast(){
-        Node2P temp = tail;
-        if (!isEmpty()){
-            if (tail == head){
-                head = tail = null;
-            }
-            else {
-                tail.prev.next = null;
-                tail=temp.prev;
-            } size--;
         }
-        else System.out.println("List kosong!");
-
     }
-    public void deleteAfter(int index){
-        Node2P temp = head;
-        if(index < size-2){
-            for(int i=0;i<index;i++){
-                temp = temp.next;
+
+    @Override
+    public void deleteLast() {
+        if (!isEmpty()) {
+            if (tail == head) {
+                head = tail = null;
+            } else {
+                tail = tail.prev;
+                tail.next = null;
             }
-            temp.next.next.prev = temp;
+            size--;
+        } else {
+            System.out.println("List kosong!");
+        }
+    }
+
+    @Override
+    public void deleteAfter(int index) {
+        if (isEmpty()) {
+            System.out.println("List kosong!");
+            return;
+        }
+        if (index < 0 || index >= size - 1) {
+            System.out.println("Tidak ada elemen setelah indeks tersebut");
+            return;
+        }
+
+        Node2P temp = head;
+        for (int i = 0; i < index; i++) {
+            temp = temp.next;
+        }
+
+        if (temp.next == tail) {
+            deleteLast();
+        } else {
             temp.next = temp.next.next;
+            temp.next.prev = temp;
             size--;
         }
-        else if(index==size-2){//menghapus tail
-            this.deleteLast();
-        }
-        else{
-            System.out.println("Index lebih besar atau sama dari ukuran list");
-        }
-
     }
 
-
-    public void print(){
+    @Override
+    public void print() {
         Node2P currentNode = head;
-        for(int i =0;i<size;i++){
+        while (currentNode != null) {
             System.out.println(currentNode.data);
             currentNode = currentNode.next;
         }
     }
 
+    // =========================================================
+    // IMPLEMENTASI METHOD TUGAS (a - e)
+    // =========================================================
+
+    // a. Mengembalikan data pada index ke-i
     @Override
     public Object get(int index) {
-        // TODO digunakan untuk mengembalikan data pada index ke-i dimulai dari head. Head memiliki index 0
-        return null;
+        if (index < 0 || index >= size || head == null) {
+            return null;
+        }
+        
+        // Optimasi traversal: cari dari head atau tail berdasarkan posisi index
+        Node2P current;
+        if (index < size / 2) {
+            current = head;
+            for (int i = 0; i < index; i++) {
+                current = current.next;
+            }
+        } else {
+            current = tail;
+            for (int i = size - 1; i > index; i--) {
+                current = current.prev;
+            }
+        }
+        return current.data;
     }
+
+    // b. Mencari kemunculan pertama targetData
     @Override
     public int indexOf(Object targetData) {
-        // TODO digunakan mencari kemunculan pertama targetData pada linked list dan mengembalikan indeksnya. Indeks dari head adalah 0. Jika tidak ada targetData pada linked list, kembalikan nilai -1 
-        return 0;
+        Node2P current = head;
+        int index = 0;
+        while (current != null) {
+            if ((targetData == null && current.data == null) || 
+                (targetData != null && targetData.equals(current.data))) {
+                return index;
+            }
+            current = current.next;
+            index++;
+        }
+        return -1;
     }
+
+    // c. Mencetak data secara terbalik (tail ke head)
     @Override
     public void printReverse() {
-        // TODO digunakan untuk mencetak data pada linked list dengan urutan terbalik, dari tail ke head.
-        
+        Node2P current = tail;
+        while (current != null) {
+            System.out.println(current.data);
+            current = current.prev;
+        }
     }
+
+    // d. Mencari dan menghapus node dengan data targetData
     @Override
     public boolean remove(Object targetData) {
-        // TODO digunakan untuk mencari dan menghapus node dengan data=targetData pada linked list serta mengembalikan nilai True jika berhasil, dan False jika targetData tidak ada di linkedList
+        if (isEmpty()) {
+            return false;
+        }
+
+        // Jika data berada di head
+        if ((targetData == null && head.data == null) || 
+            (targetData != null && targetData.equals(head.data))) {
+            deleteFirst();
+            return true;
+        }
+
+        // Jika data berada di tail
+        if ((targetData == null && tail.data == null) || 
+            (targetData != null && targetData.equals(tail.data))) {
+            deleteLast();
+            return true;
+        }
+
+        // Cari di tengah list
+        Node2P current = head.next;
+        while (current != null && current != tail) {
+            if ((targetData == null && current.data == null) || 
+                (targetData != null && targetData.equals(current.data))) {
+                
+                current.prev.next = current.next;
+                current.next.prev = current.prev;
+                size--;
+                return true;
+            }
+            current = current.next;
+        }
         return false;
     }
+
+    // e. Mendapatkan keseluruhan data dalam bentuk Array (head ke tail)
     @Override
     public Object[] toArray() {
-        // TODO digunakan untuk mendapatkan keseluruhan data pada node-node di linked list dalam bentuk array. Data-data pada array disusun secara urut mulai dari head sampai dengan tail.
-        return null;
+        Object[] array = new Object[size];
+        Node2P current = head;
+        int index = 0;
+        while (current != null) {
+            array[index++] = current.data;
+            current = current.next;
+        }
+        return array;
     }
 }
