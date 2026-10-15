@@ -1,142 +1,225 @@
 /**
  * SinglyLinkedList
  */
-public class SinglyLinkedList implements LinkedList{
+public class SinglyLinkedList implements LinkedList {
 
-    public Node head,tail;
-    private int size=0;
+    public Node head, tail;
+    private int size = 0;
 
-    public SinglyLinkedList(){
-        head=tail=null;
+    public SinglyLinkedList() {
+        head = tail = null;
     }
-    public boolean isEmpty(){
-        return(size==0);
+
+    @Override
+    public boolean isEmpty() {
+        return (size == 0);
     }
-    public int size(){
+
+    @Override
+    public int size() {
         return size;
     }
-    public void addFirst(Object inputData){
+
+    @Override
+    public void addFirst(Object inputData) {
         Node baru = new Node(inputData);
-        if (isEmpty()){
+        if (isEmpty()) {
             head = baru;
             tail = baru;
-            size++;
-        }
-        else {
+        } else {
             baru.pointer = head;
             head = baru;
-            size++;
         }
+        size++;
     }
 
-    public void addLast(Object inputData){
+    @Override
+    public void addLast(Object inputData) {
         Node baru = new Node(inputData);
-        if (isEmpty()){
+        if (isEmpty()) {
             head = baru;
             tail = baru;
-            size++;
-        }
-        else {
+        } else {
             tail.pointer = baru;
             tail = baru;
-            size++;
         }
+        size++;
     }
 
-    public void addAfter(int index,Object inputData){
+    @Override
+    public void addAfter(int index, Object inputData) {
+        if (index < 0 || index >= size) {
+            System.err.println("Indeks di luar jangkauan");
+            return;
+        }
+        if (index == size - 1) {
+            addLast(inputData);
+            return;
+        }
         Node baru = new Node(inputData);
-        Node C=head;
-        for(int i=0;i<index;i++){
+        Node C = head;
+        for (int i = 0; i < index; i++) {
             C = C.pointer;
         }
         baru.pointer = C.pointer;
         C.pointer = baru;
+        size++;
     }
 
-    public void deleteFirst(){
-        if(isEmpty()){
+    @Override
+    public void deleteFirst() {
+        if (isEmpty()) {
             System.err.println("Linked list kosong");
+            return;
         }
-        else if(size==1){//else if(head==tail)
+        if (size == 1) {
             head = null;
             tail = null;
-            size--;
-        }
-        else{
+        } else {
             head = head.pointer;
-            size--;
         }
+        size--;
     }
 
-    public void deleteLast(){
-        if(isEmpty()){
+    @Override
+    public void deleteLast() {
+        if (isEmpty()) {
             System.err.println("Linked list kosong");
+            return;
         }
-        else if(size==1){//else if(head==tail)
+        if (size == 1) {
             head = null;
             tail = null;
-            size--;
-        }
-        else{
+        } else {
             Node temp = head;
-            for(int i=1;i<size;i++){
+            for (int i = 0; i < size - 2; i++) {
                 temp = temp.pointer;
             }
             tail = temp;
             tail.pointer = null;
-            size--;
         }
+        size--;
     }
 
-    public void deleteAfter(int index){
-        if(isEmpty()){
+    @Override
+    public void deleteAfter(int index) {
+        if (isEmpty()) {
             System.err.println("Linked list kosong");
+            return;
         }
-        else if(size==1){//else if(head==tail)
-            head = null;
-            tail = null;
-            size--;
+        if (index < 0 || index >= size - 1) {
+            System.err.println("Tidak ada elemen setelah indeks tersebut");
+            return;
         }
-        else{
-            Node temp = head;
-            for(int i=0;i<index;i++){
-                temp = temp.pointer;
-            }
+        Node temp = head;
+        for (int i = 0; i < index; i++) {
+            temp = temp.pointer;
+        }
+        if (temp.pointer == tail) {
+            tail = temp;
+            tail.pointer = null;
+        } else {
             temp.pointer = temp.pointer.pointer;
-            size--;
         }
+        size--;
     }
 
-    public void print(){
+    @Override
+    public void print() {
         Node currentNode = head;
-        for(int i =0;i<size;i++){
+        while (currentNode != null) {
             System.out.println(currentNode.data);
             currentNode = currentNode.pointer;
         }
     }
+
+    // =========================================================
+    // IMPLEMENTASI METHOD SESUAI TUGAS (a - e)
+    // =========================================================
+
+    // a. Mengembalikan data pada index ke-i
     @Override
     public Object get(int index) {
-        // TODO digunakan untuk mengembalikan data pada index ke-i dimulai dari head. Head memiliki index 0
-        return null;
+        if (index < 0 || index >= size || head == null) {
+            return null;
+        }
+        Node current = head;
+        for (int i = 0; i < index; i++) {
+            current = current.pointer;
+        }
+        return current.data;
     }
+
+    // b. Mencari kemunculan pertama targetData
     @Override
     public int indexOf(Object targetData) {
-        // TODO digunakan mencari kemunculan pertama targetData pada linked list dan mengembalikan indeksnya. Indeks dari head adalah 0. Jika tidak ada targetData pada linked list, kembalikan nilai -1 
-        return 0;
+        Node current = head;
+        int index = 0;
+        while (current != null) {
+            if ((targetData == null && current.data == null) || 
+                (targetData != null && targetData.equals(current.data))) {
+                return index;
+            }
+            current = current.pointer;
+            index++;
+        }
+        return -1;
     }
+
+    // c. Mencetak data secara terbalik (tail ke head)
     @Override
     public void printReverse() {
-        // TODO digunakan untuk mencetak data pada linked list dengan urutan terbalik, dari tail ke head.
-        
+        printReverseHelper(head);
     }
+
+    private void printReverseHelper(Node node) {
+        if (node == null) {
+            return;
+        }
+        printReverseHelper(node.pointer);
+        System.out.println(node.data);
+    }
+
+    // d. Mencari dan menghapus node dengan targetData
     @Override
     public boolean remove(Object targetData) {
-        // TODO digunakan untuk mencari dan menghapus node dengan data=targetData pada linked list serta mengembalikan nilai True jika berhasil, dan False jika targetData tidak ada di linkedList
+        if (isEmpty()) {
+            return false;
+        }
+
+        if ((targetData == null && head.data == null) || 
+            (targetData != null && targetData.equals(head.data))) {
+            deleteFirst();
+            return true;
+        }
+
+        Node current = head;
+        while (current.pointer != null) {
+            if ((targetData == null && current.pointer.data == null) || 
+                (targetData != null && targetData.equals(current.pointer.data))) {
+                
+                if (current.pointer == tail) {
+                    tail = current;
+                }
+                current.pointer = current.pointer.pointer;
+                size--;
+                return true;
+            }
+            current = current.pointer;
+        }
         return false;
     }
+
+    // e. Mengubah linked list menjadi array dari head ke tail
     @Override
     public Object[] toArray() {
-        // TODO digunakan untuk mendapatkan keseluruhan data pada node-node di linked list dalam bentuk array. Data-data pada array disusun secara urut mulai dari head sampai dengan tail.
-        return null;
+        Object[] array = new Object[size];
+        Node current = head;
+        int index = 0;
+        while (current != null) {
+            array[index++] = current.data;
+            current = current.pointer;
+        }
+        return array;
     }
 }
