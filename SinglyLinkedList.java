@@ -133,9 +133,6 @@ public class SinglyLinkedList implements LinkedList {
         }
     }
 
-    // =========================================================
-    // IMPLEMENTASI METHOD SESUAI TUGAS (a - e)
-    // =========================================================
 
     // a. Mengembalikan data pada index ke-i
     @Override
